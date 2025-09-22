@@ -2,34 +2,65 @@ package com.ahnaf.taskmanager;
 
 import android.content.Context;
 import android.util.Log;
-import java.util.ArrayList;
+
+import com.ahnaf.taskmanager.model.BaseTask;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ReminderService {
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private List<BaseTask> tasks = new ArrayList<>();
 
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final List<BaseTask> tasks = Collections.synchronizedList(new ArrayList<>());
+    private volatile boolean running = false;
+
+    // Add a new task
     public void addTask(BaseTask task) {
         tasks.add(task);
+        Log.d("ReminderService", "Task added: " + task.getTitle());
     }
 
-    public void startReminderChecker(Context context) {
+    // Start the background reminder checker
+    public void startReminderChecker() {
+        if (running) return; // Already running
+        running = true;
+
         executor.execute(() -> {
-            while (true) {
+            Log.d("ReminderService", "Reminder checker started");
+            while (running) {
                 long now = System.currentTimeMillis();
-                for (BaseTask task : tasks) {
-                    if (Math.abs(task.getDeadlineMillis() - now) < 60000) { // within 1 minute
-                        Log.d("ReminderService", "Reminder for: " + task.getTitle());
+
+                synchronized (tasks) { // safe iteration
+                    for (BaseTask task : tasks) {
+                        LocalDateTime deadline = task.getDeadline();
+                        long taskMillis = deadline.toInstant(ZoneOffset.UTC).toEpochMilli();
+
+                        if (now >= taskMillis - 60000 && now < taskMillis) { // 1 minute before
+                            Log.d("ReminderService", "Reminder: " + task.getTitle());
+                        }
                     }
                 }
+
                 try {
                     Thread.sleep(30000); // check every 30 seconds
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.d("ReminderService", "Checker interrupted");
+                    break;
                 }
             }
+            Log.d("ReminderService", "Reminder checker stopped");
         });
+    }
+
+    // Stop the reminder service
+    public void stopReminderChecker() {
+        running = false;
+        executor.shutdownNow();
+        Log.d("ReminderService", "Reminder service shutdown requested");
     }
 }

@@ -2,31 +2,50 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    tools:context=".MainActivity">
+
+    <!-- App Bar Layout -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.Material3.ActionBar">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:title="Task Manager"
+            app:titleCentered="true"
+            android:elevation="5dp"
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="?attr/colorOnPrimary"
+            />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- RecyclerView fills below AppBar -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTasks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="72dp">
+        android:clipToPadding="false"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-        <LinearLayout
-            android:id="@+id/taskContainer"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </ScrollView>
-
+    <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addTaskFab"
+        android:id="@+id/fabAddTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="Add Task"
         android:src="@android:drawable/ic_input_add"
+        android:layout_margin="16dp"
+        app:layout_anchor="@id/recyclerViewTasks"
         app:layout_anchorGravity="bottom|end"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"/>
-
+        app:tint="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorPrimary"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

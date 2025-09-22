@@ -1,10 +1,12 @@
-package com.ahnaf.taskmanager;
+package com.ahnaf.taskmanager.model;
+
+import java.time.LocalDateTime;
 
 public class WorkTask extends BaseTask {
     private String projectName;
 
-    public WorkTask(String title, String description, long deadlineMillis, String projectName) {
-        super(title, description, deadlineMillis);
+    public WorkTask(String title, String description, LocalDateTime deadline, String projectName) {
+        super(title, description, deadline);
         this.projectName = projectName;
     }
 

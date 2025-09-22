@@ -1,14 +1,16 @@
-package com.ahnaf.taskmanager;
+package com.ahnaf.taskmanager.model;
+
+import java.time.LocalDateTime;
 
 public abstract class BaseTask {
     private String title;
     private String description;
-    private long deadlineMillis; // timestamp in milliseconds
+    private LocalDateTime deadline; // timestamp in milliseconds
 
-    public BaseTask(String title, String description, long deadlineMillis) {
+    public BaseTask(String title, String description, LocalDateTime deadline) {
         this.title = title;
         this.description = description;
-        this.deadlineMillis = deadlineMillis;
+        this.deadline = deadline;
     }
 
     // Encapsulation: getters and setters
@@ -18,8 +20,9 @@ public abstract class BaseTask {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public long getDeadlineMillis() { return deadlineMillis; }
-    public void setDeadlineMillis(long deadlineMillis) { this.deadlineMillis = deadlineMillis; }
+    public LocalDateTime getDeadline() { return deadline; }
+    public void setDeadline(LocalDateTime deadline) { this.deadline = deadline; }
+
 
     // Polymorphism: subclasses implement differently
     public abstract void displayTaskDetails();
