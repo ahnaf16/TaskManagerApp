@@ -1,40 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="4dp">
-
+    card_view:cardElevation="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <!-- Title + Subtitle block -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/taskTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Task Title"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/taskDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Task details..."
+                android:textSize="14sp" />
+        </LinearLayout>
+
 
         <TextView
-            android:id="@+id/taskTitle"
+            android:id="@+id/textCountdown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Task title"
-            android:textSize="18sp"
+            android:layout_marginStart="8dp"
+            android:gravity="center_vertical"
+            android:text="00:00"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="20sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/taskDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Task description"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/taskDueDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Task due date"
-            android:textSize="12sp" />
-
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

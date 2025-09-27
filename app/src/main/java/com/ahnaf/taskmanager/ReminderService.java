@@ -2,6 +2,7 @@ package com.ahnaf.taskmanager;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ahnaf.taskmanager.model.BaseTask;
 
@@ -19,29 +20,44 @@ public class ReminderService {
     private final List<BaseTask> tasks = Collections.synchronizedList(new ArrayList<>());
     private volatile boolean running = false;
 
-    // Add a new task
-    public void addTask(BaseTask task) {
-        tasks.add(task);
-        Log.d("ReminderService", "Task added: " + task.getTitle());
+    public boolean isRunning() {
+        return running;
     }
 
-    // Start the background reminder checker
-    public void startReminderChecker() {
-        if (running) return; // Already running
+
+    public void setInitialList(List<BaseTask> tasks) {
+        this.tasks.addAll(tasks);
+    }
+
+    public void addTask(BaseTask task) {
+        tasks.add(task);
+    }
+
+
+    public void startReminderChecker(Context context) {
+        if (running) return;
         running = true;
 
+        Toast.makeText(context, "Reminder service started", Toast.LENGTH_SHORT).show();
+
         executor.execute(() -> {
-            Log.d("ReminderService", "Reminder checker started");
+
             while (running) {
                 long now = System.currentTimeMillis();
-
-                synchronized (tasks) { // safe iteration
+                
+                synchronized (tasks) {
                     for (BaseTask task : tasks) {
+                        Log.d("RS", "task: " + task.getTitle());
+
                         LocalDateTime deadline = task.getDeadline();
                         long taskMillis = deadline.toInstant(ZoneOffset.UTC).toEpochMilli();
 
-                        if (now >= taskMillis - 60000 && now < taskMillis) { // 1 minute before
-                            Log.d("ReminderService", "Reminder: " + task.getTitle());
+                        Log.d("RS", "taskMillis: " + taskMillis);
+
+                        // 1 minute before
+                        if (now >= taskMillis - 50000 && now < taskMillis) {
+                            task.showInfo(context);
+                            Log.d("RS", "Reminder: " + task.getTitle());
                         }
                     }
                 }
