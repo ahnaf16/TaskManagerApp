@@ -1,10 +1,20 @@
 package com.ahnaf.taskmanager;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
 
 import com.ahnaf.taskmanager.model.BaseTask;
 
@@ -53,7 +63,6 @@ public class ReminderService {
                         });
                     }
 
-
                     // when task ends
                     if ((taskMillis - now) <= 3) {
                         new Handler(Looper.getMainLooper()).post(() -> {
@@ -77,4 +86,6 @@ public class ReminderService {
         scheduler.shutdownNow();
         Log.d("ReminderService", "Reminder service shutdown requested");
     }
+
+
 }

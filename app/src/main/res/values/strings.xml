@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TaskManagerApp</string>
+    <string name="channel_name">TaskChannelName</string>
+    <string name="channel_description">Chanal to sheo task notifications</string>
 </resources>
