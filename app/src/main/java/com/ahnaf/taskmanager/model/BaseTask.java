@@ -9,11 +9,13 @@ public abstract class BaseTask {
     private String title;
     private String description;
     private LocalDateTime deadline;
+    private boolean reminded;
 
     public BaseTask(String title, String description, LocalDateTime deadline) {
         this.title = title;
         this.description = description;
         this.deadline = deadline;
+        this.reminded = false;
     }
 
     // Encapsulation: getters and setters
@@ -41,12 +43,22 @@ public abstract class BaseTask {
         this.deadline = deadline;
     }
 
+    public boolean isReminded() {
+        return reminded;
+    }
+
+    public void setReminded(boolean reminded) {
+        this.reminded = reminded;
+    }
+
 
     // Polymorphism: subclasses implement differently
-    public abstract void showInfo(Context context);
+    public abstract String reminderText();
 
     public long millisRemaining() {
         return Duration.between(LocalDateTime.now(), deadline).toMillis();
     }
+
+    public abstract String getTaskType();
 
 }

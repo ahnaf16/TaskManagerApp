@@ -1,22 +1,25 @@
 package com.ahnaf.taskmanager;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.ahnaf.taskmanager.model.BaseTask;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ReminderService {
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final List<BaseTask> tasks = Collections.synchronizedList(new ArrayList<>());
     private volatile boolean running = false;
 
@@ -24,59 +27,54 @@ public class ReminderService {
         return running;
     }
 
-
-    public void setInitialList(List<BaseTask> tasks) {
-        this.tasks.addAll(tasks);
-    }
-
     public void addTask(BaseTask task) {
         tasks.add(task);
     }
-
 
     public void startReminderChecker(Context context) {
         if (running) return;
         running = true;
 
-        Toast.makeText(context, "Reminder service started", Toast.LENGTH_SHORT).show();
+        scheduler.scheduleWithFixedDelay(() -> {
+            long now = System.currentTimeMillis();
 
-        executor.execute(() -> {
+            synchronized (tasks) {
+                for (BaseTask task : tasks) {
+                    LocalDateTime deadline = task.getDeadline();
+                    long taskMillis = deadline.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
-            while (running) {
-                long now = System.currentTimeMillis();
-                
-                synchronized (tasks) {
-                    for (BaseTask task : tasks) {
-                        Log.d("RS", "task: " + task.getTitle());
-
-                        LocalDateTime deadline = task.getDeadline();
-                        long taskMillis = deadline.toInstant(ZoneOffset.UTC).toEpochMilli();
-
-                        Log.d("RS", "taskMillis: " + taskMillis);
-
-                        // 1 minute before
-                        if (now >= taskMillis - 50000 && now < taskMillis) {
-                            task.showInfo(context);
+                    // check if deadline is within next 1 minute
+                    if (taskMillis > now && taskMillis - now <= 60000 && !task.isReminded()) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            task.setReminded(true);
+                            String info = task.reminderText();
+                            Toast.makeText(context, info, Toast.LENGTH_LONG).show();
                             Log.d("RS", "Reminder: " + task.getTitle());
-                        }
+                        });
+                    }
+
+
+                    // when task ends
+                    if ((taskMillis - now) <= 3) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            String info = "Task Ended: " + task.getTitle();
+                            Toast.makeText(context, info, Toast.LENGTH_LONG).show();
+                            Log.d("RS", "Task End: " + task.getTitle());
+                            tasks.remove(task);
+                        });
                     }
                 }
-
-                try {
-                    Thread.sleep(30000); // check every 30 seconds
-                } catch (InterruptedException e) {
-                    Log.d("ReminderService", "Checker interrupted");
-                    break;
-                }
             }
-            Log.d("ReminderService", "Reminder checker stopped");
-        });
+        }, 0, 3, TimeUnit.SECONDS);
+
+        new Handler(Looper.getMainLooper()).post(() ->
+                Toast.makeText(context, "Reminder service started", Toast.LENGTH_SHORT).show()
+        );
     }
 
-    // Stop the reminder service
     public void stopReminderChecker() {
         running = false;
-        executor.shutdownNow();
+        scheduler.shutdownNow();
         Log.d("ReminderService", "Reminder service shutdown requested");
     }
 }

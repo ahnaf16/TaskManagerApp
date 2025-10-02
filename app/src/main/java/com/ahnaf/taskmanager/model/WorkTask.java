@@ -13,9 +13,31 @@ public class WorkTask extends BaseTask {
         this.projectName = projectName;
     }
 
+    public static WorkTask create(String title, String description, int min, int sec, String location) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime deadline = now.plusSeconds(sec).plusMinutes(min);
+        return new WorkTask(title, description, deadline, location);
+    }
+
+    public static WorkTask create(String title, String description, int durationInSec, String location) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime deadline = now.plusSeconds(durationInSec);
+
+        return new WorkTask(title, description, deadline, location);
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
 
     @Override
-    public void showInfo(Context context) {
-        Toast.makeText(context, "Work Task: " + getTitle() + " [Project: " + projectName + "]", Toast.LENGTH_SHORT).show();
+    public String reminderText() {
+        return "Work Task: (" + projectName + ") " + getTitle();
+    }
+
+    @Override
+    public String getTaskType() {
+        return "Work";
     }
 }

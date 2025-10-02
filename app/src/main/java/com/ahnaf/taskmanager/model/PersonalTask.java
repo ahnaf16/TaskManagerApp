@@ -15,25 +15,30 @@ public class PersonalTask extends BaseTask {
         this.location = location;
     }
 
-    public static PersonalTask create(String title, String description, int minute, int hour, String location) {
+    public static PersonalTask create(String title, String description, int min, int sec, String location) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime deadline = now.withHour(hour).withMinute(minute);
+        LocalDateTime deadline = now.plusSeconds(sec).plusMinutes(min);
         return new PersonalTask(title, description, deadline, location);
     }
 
-    public static PersonalTask create(String title, String description, int duration, String location) {
+    public static PersonalTask create(String title, String description, int durationInSec, String location) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime deadline = now.withMinute(now.getMinute() + duration);
-
-        Log.d("TIME", "Min: " + duration);
-        Log.d("now", String.format(Locale.getDefault(), "%02d:%02d", now.getHour(), now.getMinute()));
-        Log.d("deadline", String.format(Locale.getDefault(), "%02d:%02d", deadline.getHour(), deadline.getMinute()));
+        LocalDateTime deadline = now.plusSeconds(durationInSec);
 
         return new PersonalTask(title, description, deadline, location);
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     @Override
-    public void showInfo(Context context) {
-        Toast.makeText(context, "Personal Task: " + getTitle() + " [Location: " + location + "]", Toast.LENGTH_SHORT).show();
+    public String reminderText() {
+        return "Personal Task: (" + location + ") " + getTitle();
+    }
+
+    @Override
+    public String getTaskType() {
+        return "Personal";
     }
 }

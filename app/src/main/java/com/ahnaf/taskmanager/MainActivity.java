@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private final List<BaseTask> tasks = new ArrayList<>();
     private final ReminderService reminderService = new ReminderService();
     private TaskAdapter adapter;
+    private TextView noTaskView;
     private final ActivityResultLauncher<Intent> addTaskLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                     result -> {
@@ -39,20 +43,22 @@ public class MainActivity extends AppCompatActivity {
 
                                 String title = data.getStringExtra("title");
                                 String details = data.getStringExtra("details");
-                                int duration = data.getIntExtra("duration", 0);
+                                int sec = data.getIntExtra("sec", 0);
+                                String extra = data.getStringExtra("extra");
+                                boolean isWork = data.getBooleanExtra("isWork", false);
 
-//                                int hour = data.getIntExtra("hour", 0);
-//                                int minute = data.getIntExtra("minute", 0);
+                                BaseTask task;
 
-//                                Log.d("TIME", hour + ":" + minute);
+                                if (isWork) {
+                                    task = WorkTask.create(title, details, sec, extra);
+                                } else {
+                                    task = PersonalTask.create(title, details, sec, extra);
+                                }
 
-
-                                BaseTask task = PersonalTask.create(title, details, duration, "Home");
                                 addTask(task);
                             }
                         }
                     });
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +73,13 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerViewTasks);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        noTaskView = findViewById(R.id.noTask);
 
-//        tasks.add(new PersonalTask("Workout", "Gym session at 7 PM", LocalDateTime.now().plusMinutes(1).plusSeconds(10), "Home"));
+        if (tasks.isEmpty()) {
+            noTaskView.setVisibility(View.VISIBLE);
+        } else {
+            noTaskView.setVisibility(View.GONE);
+        }
 
 
         boolean isRunning = reminderService.isRunning();
@@ -96,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
     void addTask(BaseTask task) {
         tasks.add(task);
+        noTaskView.setVisibility(View.GONE);
         reminderService.addTask(task);
         adapter.notifyItemInserted(tasks.size() - 1);
         Toast.makeText(this, "Task added!", Toast.LENGTH_SHORT).show();

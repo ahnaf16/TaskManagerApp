@@ -39,29 +39,61 @@
             style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="12dp"
             android:autofillHints=""
             android:background="?attr/colorSurfaceContainer"
             android:hint="Task Title"
             android:inputType="textCapSentences" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
+
+
         <EditText
-            android:id="@+id/duration"
+            android:id="@+id/min"
             style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints=""
             android:background="?attr/colorSurfaceContainer"
             android:ems="10"
-            android:hint="Duretion in minute"
+            android:hint="Duretion in Seconds"
             android:inputType="number" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
+
+        <EditText
+            android:id="@+id/location"
+            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:autofillHints=""
+            android:background="?attr/colorSurfaceContainer"
+            android:ems="10"
+            android:hint="Task location" />
+
+
+        <EditText
+            android:id="@+id/project"
+            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:autofillHints=""
+            android:background="?attr/colorSurfaceContainer"
+            android:ems="10"
+            android:hint="Project Name"
+            android:visibility="gone" />
+
 
         <EditText
             android:id="@+id/editDetails"
             style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="12dp"
             android:autofillHints=""
             android:background="?attr/colorSurfaceContainer"
             android:gravity="top"
@@ -69,33 +101,49 @@
             android:inputType="textMultiLine"
             android:minLines="3" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RadioGroup
+            android:id="@+id/taskTypeRG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/personal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Personal Task" />
+
+            <Space
+                android:layout_width="30dp"
+                android:layout_height="0dp" />
+
+            <RadioButton
+                android:id="@+id/work"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="Work Task" />
+
+
+        </RadioGroup>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+
+        <Button
+            android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:padding="20dp">
-
-            <!--            <Button-->
-            <!--                android:id="@+id/btnPickTime"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:text="Pick Time"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-            <Button
-                android:id="@+id/btnSave"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Save Task"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="Save Task"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </LinearLayout>

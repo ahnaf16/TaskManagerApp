@@ -2,6 +2,7 @@ package com.ahnaf.taskmanager.adapter;
 
 
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahnaf.taskmanager.R;
 import com.ahnaf.taskmanager.model.BaseTask;
+import com.ahnaf.taskmanager.model.PersonalTask;
+import com.ahnaf.taskmanager.model.WorkTask;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.color.MaterialColors;
 
 import java.util.List;
@@ -27,18 +31,46 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_task, parent, false);
-        return new TaskViewHolder(v);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
+        return new TaskViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         BaseTask task = tasks.get(position);
+        boolean isWork = task instanceof WorkTask;
+
         holder.title.setText(task.getTitle());
         holder.details.setText(task.getDescription());
+        holder.typeChip.setText(task.getTaskType());
 
-        // Cancel any old timer (important for RecyclerView reuse)
+
+        if (isWork) {
+            WorkTask wTask = (WorkTask) task;
+            holder.extra.setText(wTask.getProjectName());
+            if (wTask.getProjectName().isEmpty()) {
+                holder.extra.setVisibility(View.GONE);
+            } else {
+                holder.extra.setVisibility(View.VISIBLE);
+            }
+        } else {
+            PersonalTask pTask = (PersonalTask) task;
+            holder.extra.setText(pTask.getLocation());
+            if (pTask.getLocation().isEmpty()) {
+                holder.extra.setVisibility(View.GONE);
+            } else {
+                holder.extra.setVisibility(View.VISIBLE);
+            }
+        }
+
+
+        if (task.getDescription().isEmpty()) {
+            holder.details.setVisibility(View.GONE);
+        } else {
+            holder.details.setVisibility(View.VISIBLE);
+        }
+
+        // Cancel any old timer
         if (holder.countDownTimer != null) {
             holder.countDownTimer.cancel();
         }
@@ -51,8 +83,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 public void onTick(long millisUntilFinished) {
                     long minutes = millisUntilFinished / 1000 / 60;
                     long seconds = (millisUntilFinished / 1000) % 60;
-                    holder.countdown.setText(
-                            String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
+                    holder.countdown.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
                 }
 
                 @Override
@@ -71,14 +102,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
-        TextView title, details, countdown;
+        TextView title, details, countdown, extra;
+        Chip typeChip;
         CountDownTimer countDownTimer;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.taskTitle);
             details = itemView.findViewById(R.id.taskDescription);
+            extra = itemView.findViewById(R.id.taskExtra);
             countdown = itemView.findViewById(R.id.textCountdown);
+            typeChip = itemView.findViewById(R.id.type);
         }
     }
 }
