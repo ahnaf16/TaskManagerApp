@@ -54,7 +54,10 @@ public class AddTaskActivity extends AppCompatActivity {
         saveBtn.setOnClickListener(v -> {
             String title = titleField.getText().toString();
             String details = detailsField.getText().toString();
-            int sec = Integer.parseInt(secField.getText().toString());
+
+            String dur = secField.getText().toString();
+            int sec = dur.isEmpty() ? 0 : Integer.parseInt(dur);
+
             boolean isWork = radioGroup.getCheckedRadioButtonId() == R.id.work;
 
             String extra;
@@ -62,6 +65,15 @@ public class AddTaskActivity extends AppCompatActivity {
                 extra = projectField.getText().toString();
             } else {
                 extra = locationField.getText().toString();
+            }
+
+            if (title.isEmpty()) {
+                titleField.setError("Title is required");
+                return;
+            }
+            if (dur.isEmpty()) {
+                secField.setError("Seconds is required");
+                return;
             }
 
 
@@ -74,6 +86,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
             setResult(RESULT_OK, result);
             finish();
+
         });
     }
 }
